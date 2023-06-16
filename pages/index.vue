@@ -2,19 +2,25 @@
   <div>
     <h1>{{ title }}</h1>
     <button @click="clickMe">click me</button>
-    <ul>
-      <li v-for="pokemon in pokemons" :key="pokemon.id">
-        <NuxtLink :to="`/pokemon/${pokemon.id}`">
-          {{ pokemon.name.english }}
-        </NuxtLink>
-      </li>
-    </ul>
+
+    <p v-if="pending">Loading...</p>
+    <template v-else>
+      <ul>
+        <li v-for="pokemon in pokemons" :key="pokemon.id">
+          <NuxtLink :to="`/pokemon/${pokemon.id}`">
+            {{ pokemon.name.english }}
+          </NuxtLink>
+        </li>
+      </ul>
+    </template>
   </div>
 </template>
 
 <script setup>
-const { data: pokemons } = await useAsyncData("pokemons", () =>
-  $fetch("/api/pokemon")
+const { data: pokemons, pending } = await useAsyncData(
+  "pokemons",
+  () => $fetch("/api/pokemon"),
+  { lazy: true }
 );
 
 const title = ref("Pokemon list");
